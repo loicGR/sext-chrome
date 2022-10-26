@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import makeManifest from './scripts/make-manifest';
 import WindiCSS from 'vite-plugin-windicss';
-import { createVuePlugin } from 'vite-plugin-vue2';
+import vuePlugin from '@vitejs/plugin-vue2';
 
 const src = resolve(__dirname, 'src');
 const assetsDir = resolve(src, 'assets');
@@ -16,7 +16,7 @@ export default defineConfig({
       '@assets': assetsDir,
     },
   },
-  plugins: [makeManifest(), createVuePlugin(), WindiCSS()],
+  plugins: [makeManifest(), vuePlugin(), WindiCSS()],
   publicDir,
   build: {
     outDir,
