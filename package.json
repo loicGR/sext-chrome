@@ -41,7 +41,6 @@
       "node": true
     },
     "extends": [
-      "preact",
       "eslint:recommended",
       "plugin:@typescript-eslint/recommended",
       "plugin:prettier/recommended"
