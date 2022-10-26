@@ -13,8 +13,8 @@ const manifest: ManifestType = {
   },
   background: { service_worker: 'src/background/index.js' },
   action: {
-    default_popup: 'src/popup/index.html',
-    default_icon: 'icon128.png',
+    // default_popup: 'src/popup/index.html',
+    default_icon: 'icon30.png',
   },
   icons: {
     '128': 'icon128.png',
@@ -28,8 +28,8 @@ const manifest: ManifestType = {
   devtools_page: 'src/devtools/index.html',
   web_accessible_resources: [
     {
-      resources: ['icon128.png'],
-      matches: [],
+      resources: ['icon128.png', 'src/sidebar/index.html'],
+      matches: ['<all_urls>'],
     },
   ],
 };

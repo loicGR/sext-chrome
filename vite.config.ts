@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import makeManifest from './scripts/make-manifest';
 import WindiCSS from 'vite-plugin-windicss';
-import vue from "@vitejs/plugin-vue";
+import { createVuePlugin } from 'vite-plugin-vue2';
 
 const src = resolve(__dirname, 'src');
 const assetsDir = resolve(src, 'assets');
@@ -16,15 +16,16 @@ export default defineConfig({
       '@assets': assetsDir,
     },
   },
-  plugins: [makeManifest(), vue(), WindiCSS()],
+  plugins: [makeManifest(), createVuePlugin(), WindiCSS()],
   publicDir,
   build: {
     outDir,
     rollupOptions: {
       input: {
+        sidebar: resolve(src, 'sidebar', 'index.html'),
         content: resolve(src, 'content', 'index.ts'),
         background: resolve(src, 'background', 'index.ts'),
-        popup: resolve(src, 'popup', 'index.html'),
+        // popup: resolve(src, 'popup', 'index.html'),
         // newtab: resolve(src, 'newtab', 'index.html'),
         // devtools: resolve(src, 'devtools', 'index.html'),
         options: resolve(src, 'options', 'index.html'),
