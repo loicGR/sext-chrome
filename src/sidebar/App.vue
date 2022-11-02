@@ -20,29 +20,27 @@
 </template>
 
 <script lang='ts'>
-import Login from './views/Login.vue'
 import packageClosed from '../icons/package-variant-closed.svg';
+import { Component, Vue } from 'vue-property-decorator';
+import Login from '@src/sidebar/views/Login.vue';
 
 const IFRAME_WIDTH = 310
 
-export default {
-  name: 'App',
-  data() {
-    return {
-      frameWidth: IFRAME_WIDTH-2,
-      showLogin: false,
-      packageClosed
-    }
-  },
-  components: {
-    Login
-  },
-  methods: {
+@Component({
+  components: { Login },
+})
+export default class App extends Vue {
+  // Les props
+  // Les propriétés
+  private showLogin: boolean = false
+  private packageClosed = packageClosed
+  private frameWidth = IFRAME_WIDTH-2
 
-  },
-  async mounted() {
-    console.log('App mounted')
-  }
+  // Les propriétés calculées
+  // Les hooks
+  // Les méthodes surveillées
+  // Les méthodes d'instance
+  // Les méthodes statiques
 }
 </script>
 
