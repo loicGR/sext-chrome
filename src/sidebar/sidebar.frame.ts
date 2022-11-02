@@ -1,5 +1,6 @@
 
 const IFRAME_ID = 'extension-frame-scapin'
+const IFRAME_WIDTH = 310
 
 export function loadIframe() {
   console.log('loadIframe')
@@ -8,7 +9,7 @@ export function loadIframe() {
   iframe.setAttribute('style', 'top: 0px; right: 0px;' +
     'border: 1px solid #83c0e6; border-radius: 0; box-shadow: 0 0 4px #83c0e6;' +
     'width: 0; height: 100%; z-index: 90000000; position:fixed; ' +
-    'visibility:hidden; background-color: #f1f7ff; transition: width 0.8s;')
+    'visibility:hidden; background-color: white; transition: width 0.8s;')
   iframe.src = chrome.runtime.getURL('src/sidebar/index.html')
   document.body.appendChild(iframe)
   return iframe
@@ -37,7 +38,7 @@ async function toggle() {
     if (iframe.style.width === '0px') {
       // iframe.style.border = '1px solid #83c0e6'
       iframe.style.visibility = 'visible'
-      iframe.style.width = '310px'
+      iframe.style.width = `${IFRAME_WIDTH}px`
     } else {
       iframe.style.width = '0px'
       setTimeout(() => {

@@ -2,7 +2,10 @@
   "watch": [
     "src",
     "scripts",
-    "vite.config.ts"
+    "styles",
+    "vite.config.ts",
+    "postcss.config.cjs",
+    "tailwind.config.cjs"
   ],
   "ext": "tsx,css,html,ts,vue",
   "ignore": [

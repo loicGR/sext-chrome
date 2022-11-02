@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    .btn {
+        @apply px-3 py-1.5 font-roboto font-semibold text-xs rounded shadow-lg tracking-wide hover:opacity-90 bg-slate-300
+    }
+
+    .btn-blue {
+        @apply text-white bg-s_blue
+    }
+
+    .btn-green {
+        @apply text-white bg-s_green
+    }
+
+    .btn-red {
+        @apply text-white bg-s_red
+    }
+    .icon {
+        @apply w-6 h-6
+    }
+
+
+}
+
