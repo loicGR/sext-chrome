@@ -2,8 +2,13 @@
 const IFRAME_ID = 'extension-frame-scapin'
 const IFRAME_WIDTH = 310
 
-export function loadIframe() {
+export async function loadIframe() {
   console.log('loadIframe')
+
+  // Sauvegarde de la largeur pour sa réutilisation dans App.vue
+  // La constante IFRAME_WIDTH peut donc être modifiée sans que cela ait un impact sur App.vue
+  await chrome.storage.sync.set({ 'IFRAME_WIDTH': IFRAME_WIDTH })
+
   const iframe = document.createElement('iframe')
   iframe.setAttribute('id', IFRAME_ID)
   iframe.setAttribute('style', 'top: 0px; right: 0px;' +
@@ -19,13 +24,13 @@ const getIframe = () => {
   return document.getElementById(IFRAME_ID)
 }
 
-export function unloadIframe(iframe: HTMLElement | null) {
-  console.log('unloadIframe')
-
-  if (iframe) {
-    document.body.removeChild(iframe)
-  }
-}
+// export function unloadIframe(iframe: HTMLElement | null) {
+//   console.log('unloadIframe')
+//
+//   if (iframe) {
+//     document.body.removeChild(iframe)
+//   }
+// }
 
 async function toggle() {
   console.log('toggle')
@@ -50,4 +55,4 @@ async function toggle() {
   }
 }
 
-chrome.runtime.onMessage.addListener(async function () { toggle() })
+chrome.runtime.onMessage.addListener(async function () { await toggle() })

@@ -24,8 +24,6 @@ import packageClosed from '../icons/package-variant-closed.svg';
 import { Component, Vue } from 'vue-property-decorator';
 import Login from '@src/sidebar/views/Login.vue';
 
-const IFRAME_WIDTH = 310
-
 @Component({
   components: { Login },
 })
@@ -34,10 +32,16 @@ export default class App extends Vue {
   // Les propriétés
   private showLogin: boolean = false
   private packageClosed = packageClosed
-  private frameWidth = IFRAME_WIDTH-2
+  private frameWidth = 0
 
   // Les propriétés calculées
   // Les hooks
+  public async mounted() {
+    // Récupération de la largeur de l'iframe
+    const {IFRAME_WIDTH} = await chrome.storage.sync.get('IFRAME_WIDTH')
+    this.frameWidth = IFRAME_WIDTH - 2
+  }
+
   // Les méthodes surveillées
   // Les méthodes d'instance
   // Les méthodes statiques

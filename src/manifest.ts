@@ -3,7 +3,8 @@ import { ManifestType } from '@src/manifest-type';
 
 const manifest: ManifestType = {
   manifest_version: 3,
-  name: packageJson.name,
+  name: 'Scapin Screen Scanner',
+  short_name: packageJson.name,
   version: packageJson.version,
   description: packageJson.description,
   // options_page: 'src/options/index.html',
@@ -12,6 +13,12 @@ const manifest: ManifestType = {
     open_in_tab: false
   },
   background: { service_worker: 'src/background/index.js' },
+  permissions:  [
+    "activeTab",
+    "scripting",
+    "webRequest",
+    "storage"
+  ],
   action: {
     // default_popup: 'src/popup/index.html',
     default_icon: 'icon30.png',
