@@ -1,33 +1,40 @@
 <template>
   <div class='mt-2 p-2'>
     <p class='title'>Login vue</p>
-    <s-input label='Account' placeholder='Account identifier' type='text' v-model='account'/>
-    <s-input label='Email' placeholder='Email address' type='email' v-model='email' :readonly='existEmail'/>
-    <s-input label='Password' placeholder='Password' type='password' v-model='password'/>
+    <s-input label='Account' placeholder='Account identifier' type='text' v-model='input.account' :readonly='!!account'/>
+    <s-input label='Email' placeholder='Email address' type='email' v-model='input.email' />
+    <s-input label='Password' placeholder='Password' type='password' v-model='input.password'/>
   </div>
 </template>
 
 <script lang='ts'>
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import SInput from '@src/sidebar/components/SInput.vue';
+import { AccountId } from '@src/utils/storage.utils';
+import { UserDocument } from '@src/interfaces';
+
 @Component({
   components: { SInput },
 })
 export default class Login extends Vue {
   // Les props
+  @Prop({default: null}) user!: UserDocument
+
   // Les propriétés
-  private account: string = ''
-  private email: string = 'antoine@gmail.com'
-  private password: string = ''
-  private existEmail: boolean = true
+  private account: string | undefined
+  private input = {
+    account: '',
+    email: '',
+    password: ''
+  }
 
   // Les propriétés calculées
   // Les hooks
-  // Les méthodes surveillées
-  @Watch('email')
-  private onChangeEmail() {
-    console.log('email:', this.email)
+  public async mounted() {
+    console.log('mounted Login.vue')
+    this.account = await AccountId.get()
   }
+  // Les méthodes surveillées
   // Les méthodes d'instance
   // Les méthodes statiques
 }

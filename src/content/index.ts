@@ -3,6 +3,6 @@ import { addEventListeners } from '@src/content/content.events';
 
 console.log('content loaded');
 window.onload = async function() {
-  loadIframe()
+  await loadIframe()
   addEventListeners()
 }

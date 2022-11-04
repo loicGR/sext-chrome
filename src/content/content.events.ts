@@ -1,13 +1,13 @@
 
 export function addEventListeners() {
-  console.log('addEventListeners')
+  // console.log('addEventListeners')
   document.addEventListener('mouseover', mouseOverEvent, false);
   document.addEventListener('mouseout', mouseOutEvent, false);
   document.addEventListener('keypress', keyPressEvent, false);
 }
 
 export function removeEventListeners() {
-  console.log('removeEventListeners')
+  // console.log('removeEventListeners')
   document.removeEventListener('mouseover', mouseOverEvent, false);
   document.removeEventListener('mouseout', mouseOutEvent, false);
   document.removeEventListener('keypress', keyPressEvent, false);

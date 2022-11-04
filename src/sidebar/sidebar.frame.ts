@@ -3,12 +3,12 @@ const IFRAME_ID = 'extension-frame-scapin'
 const IFRAME_WIDTH = 310
 
 export async function loadIframe() {
-  console.log('loadIframe')
+  // console.log('loadIframe')
 
   // Sauvegarde de la largeur pour sa réutilisation dans App.vue
   // La constante IFRAME_WIDTH peut donc être modifiée sans que cela ait un impact sur App.vue
   await chrome.storage.sync.set({ 'IFRAME_WIDTH': IFRAME_WIDTH })
-  await chrome.storage.sync.set({ sapiUrl: 'https://sapi.loicg.com' })
+  await chrome.storage.sync.set({ sapiUrl: 'https://scapin.loicg.com/sapi' })
 
   const iframe = document.createElement('iframe')
   iframe.setAttribute('id', IFRAME_ID)
@@ -25,14 +25,6 @@ const getIframe = () => {
   return document.getElementById(IFRAME_ID)
 }
 
-// export function unloadIframe(iframe: HTMLElement | null) {
-//   console.log('unloadIframe')
-//
-//   if (iframe) {
-//     document.body.removeChild(iframe)
-//   }
-// }
-
 async function toggle() {
   console.log('toggle')
   // await chrome.storage.sync.set({frames: []})
@@ -45,8 +37,10 @@ async function toggle() {
       // iframe.style.border = '1px solid #83c0e6'
       iframe.style.visibility = 'visible'
       iframe.style.width = `${IFRAME_WIDTH}px`
+      await chrome.runtime.sendMessage({ from: 'iframe', show: true } )
     } else {
       iframe.style.width = '0px'
+      await chrome.runtime.sendMessage({ from: 'iframe', show: false })
       setTimeout(() => {
         if (iframe) {
           iframe.style.visibility = 'hidden';

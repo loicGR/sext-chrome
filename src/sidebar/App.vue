@@ -4,41 +4,44 @@
       <img class='h-8 mr-1' src='../icons/LogoScapin.svg' alt='Logo SCAPIN'/>
       <span class='text-xl text-s_black font-roboto'>Scapin Screen Scanner</span>
     </div>
-    <button class='btn btn-red mt-2 ml-2' @click='showLogin = ! showLogin'>Login</button>
-
-    <login v-if='showLogin'/>
+    <screen v-if='user'></screen>
+    <login v-else/>
 
   </div>
 </template>
 
 <script lang='ts'>
-import packageClosed from '../icons/package-variant-closed.svg';
 import { Component, Vue } from 'vue-property-decorator';
 import Login from '@src/sidebar/views/Login.vue';
-import Storage from '@src/sidebar/storage.utils';
+import { iframeWidth } from '@src/utils/storage.utils';
+import { UserDocument } from '@src/interfaces';
+import { getUserByAuthId } from '@src/axios/user.axios';
+import Screen from '@src/sidebar/views/Screen.vue';
 
 @Component({
-  components: { Login },
+  components: { Screen, Login },
 })
 export default class App extends Vue {
   // Les props
   // Les propriétés
-  private showLogin: boolean = false
-  private packageClosed = packageClosed
   private frameWidth = 0
-  private account: string = ''
-  private email: string = ''
+  private user: UserDocument | null = null
+
 
 
   // Les propriétés calculées
   // Les hooks
   public async mounted() {
-    console.log('mounted App')
-    // Récupération de la largeur de l'iframe
-    this.frameWidth = await Storage.iframeWidth() - 2
-    this.account = await Storage.getAccount()
-    this.email = await Storage.getEmail()
+    console.log('mounted App.vue')
 
+    this.frameWidth = await iframeWidth() - 2
+
+    chrome.runtime.onMessage.addListener(async message => {
+      // console.log('onMessage :', message)
+      if (message.from === 'iframe' && message.show && !this.user) {
+        this.user = await getUserByAuthId()
+      }
+    })
 
   }
 

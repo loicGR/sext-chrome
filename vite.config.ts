@@ -24,10 +24,8 @@ export default defineConfig({
         sidebar: resolve(src, 'sidebar', 'index.html'),
         content: resolve(src, 'content', 'index.ts'),
         background: resolve(src, 'background', 'index.ts'),
-        // popup: resolve(src, 'popup', 'index.html'),
-        // newtab: resolve(src, 'newtab', 'index.html'),
-        // devtools: resolve(src, 'devtools', 'index.html'),
         options: resolve(src, 'options', 'index.html'),
+        storage: resolve(src, 'utils', 'storage.utils.ts')
       },
       output: {
         entryFileNames: chunk => `src/${chunk.name}/index.js`,
