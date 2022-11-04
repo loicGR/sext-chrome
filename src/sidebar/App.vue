@@ -4,15 +4,7 @@
       <img class='h-8 mr-1' src='../icons/LogoScapin.svg' alt='Logo SCAPIN'/>
       <span class='text-xl text-s_black font-roboto'>Scapin Screen Scanner</span>
     </div>
-    <p class='font-sans text-2xl text-scapin_blue'>This is the Scapin Screen Scanner</p>
-    <p>Welcome</p>
-    <div class='btn ml-2' @click='showLogin = ! showLogin'><p>test case</p></div>
-    <button class='btn btn-blue ml-2' @click='showLogin = ! showLogin'>Test Cases</button>
-    <button class='btn btn-green ml-2' @click='showLogin = ! showLogin'>TEST CASES</button>
     <button class='btn btn-red mt-2 ml-2' @click='showLogin = ! showLogin'>Login</button>
-    <div class='inline-flex'>
-      <img class='icon' :src='packageClosed' alt='closed'/>
-    </div>
 
     <login v-if='showLogin'/>
 
@@ -23,6 +15,7 @@
 import packageClosed from '../icons/package-variant-closed.svg';
 import { Component, Vue } from 'vue-property-decorator';
 import Login from '@src/sidebar/views/Login.vue';
+import Storage from '@src/sidebar/storage.utils';
 
 @Component({
   components: { Login },
@@ -33,13 +26,20 @@ export default class App extends Vue {
   private showLogin: boolean = false
   private packageClosed = packageClosed
   private frameWidth = 0
+  private account: string = ''
+  private email: string = ''
+
 
   // Les propriétés calculées
   // Les hooks
   public async mounted() {
+    console.log('mounted App')
     // Récupération de la largeur de l'iframe
-    const {IFRAME_WIDTH} = await chrome.storage.sync.get('IFRAME_WIDTH')
-    this.frameWidth = IFRAME_WIDTH - 2
+    this.frameWidth = await Storage.iframeWidth() - 2
+    this.account = await Storage.getAccount()
+    this.email = await Storage.getEmail()
+
+
   }
 
   // Les méthodes surveillées

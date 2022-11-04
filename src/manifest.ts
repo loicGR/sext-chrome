@@ -10,7 +10,7 @@ const manifest: ManifestType = {
   // options_page: 'src/options/index.html',
   options_ui: {
     page: 'src/options/index.html',
-    open_in_tab: false
+    open_in_tab: true
   },
   background: { service_worker: 'src/background/index.js' },
   permissions:  [

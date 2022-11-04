@@ -21,7 +21,9 @@
     .icon {
         @apply w-6 h-6
     }
-
+    .title {
+        @apply font-roboto font-bold text-xl tracking-wide text-s_black
+    }
 
 }
 
