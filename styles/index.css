@@ -24,6 +24,15 @@
     .title {
         @apply font-roboto font-bold text-xl tracking-wide text-s_black
     }
+    .toolbar-blue {
+        @apply h-12 bg-s_blue text-white drop-shadow-lg px-4 flex flex-col justify-center
+    }
+    .toolbar-title {
+        @apply font-roboto text-lg tracking-wide
+    }
+    .card {
+        @apply border border-s_blue shadow-lg shadow-gray-500/40 m-2 rounded bg-white
+    }
 
 }
 

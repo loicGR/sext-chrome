@@ -25,6 +25,10 @@ export class AccountId {
   public static set = async (accountId: string) => {
     await chrome.storage.sync.set({accountId})
   }
+
+  public static clear = async () => {
+    await chrome.storage.sync.remove('accountId')
+  }
 }
 
 export class SapiUrl {
@@ -65,5 +69,9 @@ export class JwtToken {
     } else {
       return null
     }
+  }
+
+  public static logout = async () => {
+    await chrome.storage.sync.remove(['token', 'userEmail'])
   }
 }

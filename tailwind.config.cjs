@@ -11,8 +11,9 @@ module.exports = {
       s_black: '#062b33',
       sbg_green: '#e7f8f6',
       sbg_blue: '#f1f7ff',
-      shv_green: '#009688',
-      shv_blue: '#0277BD'
+      sbg_orange: '#fff3e0',
+      sbg_red: '#fdf4f6',
+      sbg_black: '#f1f7ff',
     },
     fontFamily: {
       'roboto': ['Roboto', 'sans-serif'],

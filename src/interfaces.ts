@@ -33,5 +33,19 @@ export interface UserDocument {
   picture: string;
   updatedAt: Date;
   createdAt: Date;
-  projects: { _id: string, name: string }[];
+  projects: ProjectDocument[];
+}
+
+export interface ProjectDocument {
+  _id: string,
+  name: string
+}
+
+export interface TreenodeDocument {
+  _id: string;
+  _parent: string | null;
+  prjid: string;
+  storage: string;
+  name: string;
+  description: string;
 }

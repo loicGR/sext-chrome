@@ -20,7 +20,6 @@ export default class SInput extends Vue {
   @Prop({ default: false }) private readonly!: boolean;
 
   // Les propriétés
-
   // Les propriétés calculées
   // Les hooks
   // Les méthodes surveillées
