@@ -26,7 +26,7 @@ const getIframe = () => {
 }
 
 async function toggle() {
-  console.log('toggle')
+  // console.log('toggle')
   // await chrome.storage.sync.set({frames: []})
   // await chrome.storage.sync.remove('target')
 
