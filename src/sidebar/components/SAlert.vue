@@ -1,21 +1,21 @@
 <template>
   <div v-if='theMsg.length > 0' class='alert-box' :class='color'>
-    <s-alert-icon :type='type' css='fill-white'/>
+    <s-alert-icon :type='type' css='fill-white' />
     <div class='text-white text-sm font-roboto ml-2' v-html='theMsg'></div>
   </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import SAlertIcon from '@src/sidebar/components/sAlertIcon.vue';
+import SAlertIcon from '@src/sidebar/components/SAlertIcon.vue';
 
 @Component({
   components: { SAlertIcon },
 })
 export default class SAlert extends Vue {
   // Les props
-  @Prop({default: ''}) private type!: string
-  @Prop() private msg!: string | string[]
+  @Prop({ default: '' }) private type!: string;
+  @Prop() private msg!: string | string[];
 
   // Les propriétés
 
@@ -23,23 +23,23 @@ export default class SAlert extends Vue {
   private get color() {
     switch (this.type) {
       case 'success':
-        return 'bg-s_green'
+        return 'bg-s_green';
       case 'info' :
-        return 'bg-s_blue'
+        return 'bg-s_blue';
       case 'warning':
-        return 'bg-s_orange'
+        return 'bg-s_orange';
       case 'error':
-        return 'bg-s_red'
+        return 'bg-s_red';
       default:
-        return undefined
+        return undefined;
     }
   }
 
   private get theMsg() {
     if (typeof this.msg === 'string') {
-      return this.msg
+      return this.msg;
     } else {
-      return this.msg.join('</br>')
+      return this.msg.join('</br>');
     }
   }
 

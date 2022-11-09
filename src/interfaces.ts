@@ -49,3 +49,10 @@ export interface TreenodeDocument {
   name: string;
   description: string;
 }
+
+export interface TreeStructure {
+  id: string | null;
+  name: string;
+  children?: TreeStructure[];
+  isRoot: boolean;
+}

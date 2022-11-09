@@ -1,5 +1,5 @@
 <template>
-  <div :style='`width: ${this.frameWidth}px; height: ${this.maxHeight - 10}px`' class='overflow-hidden'>
+  <div class='flex flex-col' :style='`width: ${frameWidth-2}px; height: ${maxHeight}px`' name='appvue'>
     <!--    Bandeau supérieur avec logo et titre-->
     <div class='bg-white drop-shadow-lg border-b border-gray-300 h-12 flex flex-col justify-center'>
       <div class='flex flex-row justify-center align-middle w-full'>
@@ -8,13 +8,16 @@
       </div>
     </div>
 
-    <div class='flex flex-col justify-between h-full'>
-      <div class='h-3/5 flex flex-col justify-center'>
-        <screen v-if='user && project' :user.sync='user'></screen>
-        <project v-else-if='user && !project'/>
-        <login v-else :user.sync='user'/>
+    <div class='h-full w-full flex flex-col'>
+      <screen v-if='user && project' :user.sync='user' :project='project'></screen>
+      <project v-else-if='user && !project' @save='project = $event' />
+      <login v-else :user.sync='user' />
+    </div>
+
+    <div class='flex flex-row justify-center' :style='`height: ${imgHeight}px`'>
+      <div class='w-8/12'>
+        <img src='@src/icons/image-fond.png' alt='fond' />
       </div>
-      <img src='@src/icons/image-fond.png' alt='fond' />
     </div>
   </div>
 </template>
@@ -23,10 +26,9 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import Login from '@src/sidebar/views/Login.vue';
 import { iframeWidth } from '@src/utils/storage.utils';
-import { ProjectDocument, TreenodeDocument, UserDocument } from '@src/interfaces';
+import { ProjectDocument, UserDocument } from '@src/interfaces';
 import { getUserByAuthId } from '@src/axios/user.axios';
 import Screen from '@src/sidebar/views/Screen.vue';
-import { fetchPackTree } from '@src/axios/screen.axios';
 import Project from '@src/sidebar/views/Project.vue';
 
 @Component({
@@ -35,18 +37,18 @@ import Project from '@src/sidebar/views/Project.vue';
 export default class App extends Vue {
   // Les props
   // Les propriétés
-  private frameWidth = 0
-  private user: UserDocument | null = null
-  private project: ProjectDocument | null = null
+  private frameWidth = 0;
+  private user: UserDocument | null = null;
+  private project: ProjectDocument | null = null;
   private maxHeight: number = 500;
-  private screenTreePacks: TreenodeDocument[] = []
+  private imgHeight: number = 120;
 
   // Les propriétés calculées
   // Les hooks
   public async mounted() {
     // console.log('mounted App.vue')
 
-    this.frameWidth = await iframeWidth() - 2;
+    this.frameWidth = await iframeWidth();
     this.updateHeight();
 
 
@@ -54,7 +56,7 @@ export default class App extends Vue {
       // console.log('onMessage :', message)
       if (message.from === 'iframe' && message.show && !this.user) {
         // console.log('onMessage :', message)
-        this.user = await getUserByAuthId()
+        this.user = await getUserByAuthId();
         // console.log('onMessage get user:', this.user);
       }
     });
@@ -69,25 +71,21 @@ export default class App extends Vue {
   @Watch('user')
   private async onChangeUser() {
     if (this.user) {
-      this.project = this.user.projects.length === 1 ? this.user.projects[0] : null
+      this.project = this.user.projects.length === 1 ? this.user.projects[0] : null;
     } else {
-      this.project = null
+      this.project = null;
     }
   }
 
   @Watch('project')
   private async onChangeProject() {
-    if (this.project) {
-      this.screenTreePacks = await fetchPackTree(this.project._id)
-    } else {
-      this.screenTreePacks = []
-    }
+
   }
 
   // Les méthodes d'instance
   private updateHeight() {
     this.maxHeight = window.innerHeight;
-    // console.log('innerHeight: ', this.maxHeight)
+    console.log('innerHeight: ', this.maxHeight);
   }
 
   // Les méthodes statiques
