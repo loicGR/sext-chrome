@@ -1,5 +1,5 @@
 <template>
-  <div class='w-full h-full flex flex-col' name='screen'>
+  <div class='w-full h-full flex flex-col' name='page-main'>
     <!--    Ligne de présentation ex: "Antoine Lafouine on reposity KWEB" avec le lien "Logout" placé dessous-->
     <div class='mt-1 flex flex-row justify-center items-center'>
       <p class='font-roboto font-semibold'>{{ userName }}</p>
@@ -9,23 +9,34 @@
     <div class='flex flex-row justify-center'>
       <a @click='onLogOut' class='text-s_blue underline cursor-pointer'>Log out</a>
     </div>
-
-    <screen-packs :pack.sync='packId' :tree='treePacks' />
+    <toys v-if='screenDoc' :screen.sync='screenDoc'/>
+    <screens v-else-if='packId' :pack.sync='packId' :pictures.sync='pictures' :prjid='project._id || null'
+             :screen.sync='screenDoc' />
+    <packs v-else :pack.sync='packId' :tree='treePacks' />
   </div>
 </template>
 
 <script lang='ts'>
 import { Component, Prop, PropSync, Vue } from 'vue-property-decorator';
 import { JwtToken } from '@src/utils/storage.utils';
-import { ProjectDocument, TreenodeDocument, TreeStructure, UserDocument } from '@src/interfaces';
+import {
+  PictureDocument,
+  ProjectDocument,
+  ScreenDocument,
+  TreenodeDocument,
+  TreeStructure,
+  UserDocument,
+} from '@src/interfaces';
 import { fetchPackTree } from '@src/axios/screen.axios';
 import SPackItem from '@src/sidebar/components/SPackItem.vue';
-import ScreenPacks from '@src/sidebar/views/ScreenPacks.vue';
+import Packs from '@src/sidebar/views/Packs.vue';
+import Screens from '@src/sidebar/views/Screens.vue';
+import Toys from '@src/sidebar/views/Toys.vue';
 
 @Component({
-  components: { ScreenPacks, SPackItem },
+  components: { Toys, Screens, Packs, SPackItem },
 })
-export default class Screen extends Vue {
+export default class Smain extends Vue {
   // Les props
   @PropSync('user') private theUser!: UserDocument | null;
   @Prop({ default: null }) private project!: ProjectDocument;
@@ -33,6 +44,8 @@ export default class Screen extends Vue {
   // Les propriétés
   private packId: string | null = null;
   private treePacks: TreeStructure[] = [];
+  private pictures: PictureDocument[] = [];
+  private screenDoc: ScreenDocument | null = null;
 
   // Les propriétés calculées
   private get userName() {

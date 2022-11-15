@@ -56,3 +56,34 @@ export interface TreeStructure {
   children?: TreeStructure[];
   isRoot: boolean;
 }
+
+export interface ScreenDocument {
+  _id: string
+  prjid: string
+  name: string
+  description: string
+  screenshot: string
+  packid: string | null
+}
+
+export interface PictureDocument {
+  _id: string
+  type: string
+  data: BufferSource
+
+}
+
+/**
+ * Représente partiellement la structure de données renvoyée par la requête standard fetchToys.
+ * Les propriétés non nécessaires ont été retirées
+ */
+export interface ToyDocument {
+  _id: string
+  name: string
+  type: {
+    icon: string
+    typename: string
+  }
+  screen: string
+  mapping: {key: string, value: string}[]
+}

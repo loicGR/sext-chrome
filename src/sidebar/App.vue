@@ -9,7 +9,7 @@
     </div>
 
     <div class='h-full w-full flex flex-col'>
-      <screen v-if='user && project' :user.sync='user' :project='project'></screen>
+      <smain v-if='user && project' :user.sync='user' :project='project'></smain>
       <project v-else-if='user && !project' @save='project = $event' />
       <login v-else :user.sync='user' />
     </div>
@@ -28,11 +28,11 @@ import Login from '@src/sidebar/views/Login.vue';
 import { iframeWidth } from '@src/utils/storage.utils';
 import { ProjectDocument, UserDocument } from '@src/interfaces';
 import { getUserByAuthId } from '@src/axios/user.axios';
-import Screen from '@src/sidebar/views/Screen.vue';
 import Project from '@src/sidebar/views/Project.vue';
+import Smain from '@src/sidebar/views/Smain.vue';
 
 @Component({
-  components: { Project, Screen, Login },
+  components: { Smain, Project, Login },
 })
 export default class App extends Vue {
   // Les props
@@ -85,7 +85,7 @@ export default class App extends Vue {
   // Les méthodes d'instance
   private updateHeight() {
     this.maxHeight = window.innerHeight;
-    console.log('innerHeight: ', this.maxHeight);
+    // console.log('innerHeight: ', this.maxHeight);
   }
 
   // Les méthodes statiques
