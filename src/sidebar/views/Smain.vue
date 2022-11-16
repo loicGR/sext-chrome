@@ -9,7 +9,7 @@
     <div class='flex flex-row justify-center'>
       <a @click='onLogOut' class='text-s_blue underline cursor-pointer'>Log out</a>
     </div>
-    <toys v-if='screenDoc' :screen.sync='screenDoc'/>
+    <toys v-if='screenDoc' :screen.sync='screenDoc' :shot-url='shotUrl'/>
     <screens v-else-if='packId' :pack.sync='packId' :pictures.sync='pictures' :prjid='project._id || null'
              :screen.sync='screenDoc' />
     <packs v-else :pack.sync='packId' :tree='treePacks' />
@@ -19,19 +19,13 @@
 <script lang='ts'>
 import { Component, Prop, PropSync, Vue } from 'vue-property-decorator';
 import { JwtToken } from '@src/utils/storage.utils';
-import {
-  PictureDocument,
-  ProjectDocument,
-  ScreenDocument,
-  TreenodeDocument,
-  TreeStructure,
-  UserDocument,
-} from '@src/interfaces';
+import { ProjectDocument, ScreenDocument, TreenodeDocument, TreeStructure, UserDocument } from '@src/interfaces';
 import { fetchPackTree } from '@src/axios/screen.axios';
 import SPackItem from '@src/sidebar/components/SPackItem.vue';
 import Packs from '@src/sidebar/views/Packs.vue';
 import Screens from '@src/sidebar/views/Screens.vue';
 import Toys from '@src/sidebar/views/Toys.vue';
+import pictures from '@src/utils/picture.utils';
 
 @Component({
   components: { Toys, Screens, Packs, SPackItem },
@@ -44,12 +38,16 @@ export default class Smain extends Vue {
   // Les propriétés
   private packId: string | null = null;
   private treePacks: TreeStructure[] = [];
-  private pictures: PictureDocument[] = [];
+  private pictures = pictures;
   private screenDoc: ScreenDocument | null = null;
 
   // Les propriétés calculées
   private get userName() {
     return this.theUser ? `${this.theUser.firstname} ${this.theUser.lastname}` : '??';
+  }
+
+  private get shotUrl() {
+    return this.screenDoc ? this.pictures.getUrl(this.screenDoc.screenshot) : ''
   }
 
   // Les hooks

@@ -8,27 +8,38 @@
     </div>
     <div :id='ELEMID' class='h-full'>
       <div class='overflow-y-auto p-2' :style='`height:  ${height}px`'>
+        <div class='flex flex-col'>
+          <div class='flex flex-row justify-center' :style='`height: ${size}px; min-width:${size}px !important`'>
+            <div class='bg-contain bg-center bg-no-repeat w-full' :style='`background-image: url(${shotUrl})`' />
+          </div>
+          <p class='text-base text-center text-s_black font-semibold'>{{screenDoc.name}}</p>
+        </div>
+        <s-toy-item v-for='toy in toys' :key='toy._id' :toy='toy'/>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, PropSync, Vue } from 'vue-property-decorator';
+import { Component, Prop, PropSync, Vue } from 'vue-property-decorator';
 import { ScreenDocument, ToyDocument } from '@src/interfaces';
 import { fetchToys } from '@src/axios/toy.axios';
 import SSvgIcons from '@src/sidebar/components/SSvgIcons.vue';
+import SToyItem from '@src/sidebar/components/SToyItem.vue';
 @Component({
-  components: { SSvgIcons },
+  components: { SToyItem, SSvgIcons },
 })
 export default class Toys extends Vue {
   // Les props
   @PropSync('screen', {default: null}) private screenDoc!: ScreenDocument | null
+  @Prop({default: ''}) private shotUrl!: string
+
   // Les propriétés
   private readonly ELEMID = '3s-page-toys'
   private helem: HTMLElement | null = null;
   private height: number = 0;
   private toys: ToyDocument[] = []
+  private size = 200
 
   // Les propriétés calculées
   // Les hooks
