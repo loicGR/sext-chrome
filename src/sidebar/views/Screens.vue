@@ -44,7 +44,7 @@ export default class Screens extends Vue {
   // Les propriétés calculées
   // Les hooks
   public async mounted() {
-    console.log(`mounted Screens.vue packId:${this.packId} `);
+    // console.log(`mounted Screens.vue packId:${this.packId} `);
     this.helem = document.getElementById(this.ELEMID);
     this.changeHeigth();
     addEventListener('resize', this.changeHeigth);
@@ -67,7 +67,7 @@ export default class Screens extends Vue {
   }
 
   private onSelect(screen: ScreenDocument) {
-    console.log('Selected screen:', screen.name);
+    // console.log('Selected screen:', screen.name);
     this.screenDoc = screen;
   }
 

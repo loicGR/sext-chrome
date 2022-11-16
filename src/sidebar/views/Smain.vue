@@ -57,7 +57,7 @@ export default class Smain extends Vue {
     } else {
       this.treePacks = [];
     }
-    console.log(`mounted Screen.vue packId:${this.packId} treePacks:`, { ...this.treePacks });
+    // console.log(`mounted Screen.vue packId:${this.packId} treePacks:`, { ...this.treePacks });
   }
 
   // Les méthodes surveillées

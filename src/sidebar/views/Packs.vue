@@ -35,7 +35,7 @@ export default class Packs extends Vue {
 
   // Les hooks
   public mounted() {
-    console.log(`mounted Packs.vue packId:${this.packId} tree:`, this.tree);
+    // console.log(`mounted Packs.vue packId:${this.packId} tree:`, this.tree);
     this.helem = document.getElementById(this.ELEMID);
     this.changeHeigth();
     addEventListener('resize', this.changeHeigth);

@@ -14,7 +14,7 @@
           </div>
           <p class='text-base text-center text-s_black font-semibold'>{{screenDoc.name}}</p>
         </div>
-        <s-toy-item v-for='toy in toys' :key='toy._id' :toy='toy'/>
+        <s-toy-item v-for='toy in toys' :key='toy._id' :toy='toy' :current.sync='currentToyId'/>
       </div>
     </div>
   </div>
@@ -40,11 +40,12 @@ export default class Toys extends Vue {
   private height: number = 0;
   private toys: ToyDocument[] = []
   private size = 200
+  private currentToyId: string | null = null
 
   // Les propriétés calculées
   // Les hooks
   public async mounted() {
-    console.log(`mounted Toys.vue for screen:${this.screenDoc ? this.screenDoc.name : 'null'} `);
+    // console.log(`mounted Toys.vue for screen:${this.screenDoc ? this.screenDoc.name : 'null'} `);
     this.helem = document.getElementById(this.ELEMID);
     this.changeHeigth();
     addEventListener('resize', this.changeHeigth);
@@ -61,7 +62,7 @@ export default class Toys extends Vue {
   private async loadToys() {
     if (this.screenDoc) {
       this.toys = await fetchToys(this.screenDoc._id)
-      console.log('fetchToys :', this.toys)
+      // console.log('fetchToys :', this.toys)
     }
   }
   // Les méthodes statiques

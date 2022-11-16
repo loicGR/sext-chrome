@@ -3,7 +3,7 @@
     <!--    Bandeau supérieur avec logo et titre-->
     <div class='bg-white drop-shadow-lg border-b border-gray-300 h-12 flex flex-col justify-center'>
       <div class='flex flex-row justify-center align-middle w-full'>
-        <img class='h-8 mr-1' src='../icons/LogoScapin.svg' alt='Logo SCAPIN' />
+        <img class='h-8 mr-1' src='../assets/LogoScapin.svg' alt='Logo SCAPIN' />
         <span class='text-xl text-s_black font-roboto'>Scapin Screen Scanner</span>
       </div>
     </div>
@@ -16,7 +16,7 @@
 
     <div class='flex flex-row justify-center' :style='`height: ${imgHeight}px`'>
       <div class='w-8/12'>
-        <img src='@src/icons/image-fond.png' alt='fond' />
+        <img src='@assets/image-fond.png' alt='fond' />
       </div>
     </div>
   </div>
