@@ -63,12 +63,13 @@ export default class SToyItem extends Vue {
   private onClickToy() {
     if (this.toy) {
       if (this.currentToyId === this.toy._id) {
-        this.currentToyId = null
+        this.currentToyId = null;
       } else {
-        this.currentToyId = this.toy._id
+        this.currentToyId = this.toy._id;
       }
     }
   }
+
   private onClickMap() {
     console.log('onClickMap');
   }
@@ -81,9 +82,11 @@ export default class SToyItem extends Vue {
 .bord {
   @apply border border-gray-300 rounded shadow-md hover:border-gray-400 hover:shadow-xl
 }
+
 .color-text {
   @apply text-gray-400 hover:text-s_black
 }
+
 .btn-mapping {
   @apply m-0.5 text-s_black rounded bg-gray-100 hover:bg-white hover:text-s_blue cursor-pointer
 }

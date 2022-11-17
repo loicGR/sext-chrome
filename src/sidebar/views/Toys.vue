@@ -6,8 +6,8 @@
         <span class='mx-1'>Screens List</span>
       </button>
     </div>
-    <div :id='ELEMID' class='h-full'>
-      <div class='overflow-y-auto p-2' :style='`height:  ${height}px`'>
+    <div :id='ELEMID' class='mt-2 h-full'>
+      <div class='overflow-y-auto px-2' :style='`height:  ${height}px`'>
         <div class='flex flex-col'>
           <div class='flex flex-row justify-center' :style='`height: ${size}px; min-width:${size}px !important`'>
             <div class='bg-contain bg-center bg-no-repeat w-full' :style='`background-image: url(${shotUrl})`' />
