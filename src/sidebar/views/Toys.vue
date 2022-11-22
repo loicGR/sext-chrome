@@ -2,7 +2,7 @@
   <div class='flex flex-col h-full'>
     <div class='flex flex-row px-2 pt-2'>
       <button class='btn btn-blue px-1 py-0 flex flex-row items-center' @click='screenDoc = null'>
-        <s-svg-icons name='arrow-left'/>
+        <s-svg-icons name='arrow-left' />
         <span class='mx-1'>Screens List</span>
       </button>
     </div>
@@ -12,59 +12,80 @@
           <div class='flex flex-row justify-center' :style='`height: ${size}px; min-width:${size}px !important`'>
             <div class='bg-contain bg-center bg-no-repeat w-full' :style='`background-image: url(${shotUrl})`' />
           </div>
-          <p class='text-base text-center text-s_black font-semibold'>{{screenDoc.name}}</p>
+          <p class='text-base text-center text-s_black font-semibold'>{{ screenDoc.name }}</p>
         </div>
-        <s-toy-item v-for='toy in toys' :key='toy._id' :toy='toy' :current.sync='currentToyId'/>
+        <s-toy-item v-for='toy in toys' :key='toy._id' :toy='toy' :current.sync='currentToyId' @tomap='startMap(toy)' />
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { Component, Prop, PropSync, Vue } from 'vue-property-decorator';
 import { ScreenDocument, ToyDocument } from '@src/interfaces';
 import { fetchToys } from '@src/axios/toy.axios';
 import SSvgIcons from '@src/sidebar/components/SSvgIcons.vue';
 import SToyItem from '@src/sidebar/components/SToyItem.vue';
+
 @Component({
   components: { SToyItem, SSvgIcons },
 })
 export default class Toys extends Vue {
   // Les props
-  @PropSync('screen', {default: null}) private screenDoc!: ScreenDocument | null
-  @Prop({default: ''}) private shotUrl!: string
+  @PropSync('screen', { default: null }) private screenDoc!: ScreenDocument | null;
+  @Prop({ default: '' }) private shotUrl!: string;
 
   // Les propriétés
-  private readonly ELEMID = '3s-page-toys'
+  private readonly ELEMID = '3s-page-toys';
   private helem: HTMLElement | null = null;
   private height: number = 0;
-  private toys: ToyDocument[] = []
-  private size = 200
-  private currentToyId: string | null = null
+  private toys: ToyDocument[] = [];
+  private size = 200;
+  private currentToyId: string | null = null;
+  private port: chrome.runtime.Port | null = null;
 
   // Les propriétés calculées
   // Les hooks
   public async mounted() {
-    // console.log(`mounted Toys.vue for screen:${this.screenDoc ? this.screenDoc.name : 'null'} `);
+    console.log(`mounted Toys.vue for screen:${this.screenDoc ? this.screenDoc.name : 'null'} `);
     this.helem = document.getElementById(this.ELEMID);
     this.changeHeigth();
     addEventListener('resize', this.changeHeigth);
-    await this.loadToys()
+    await this.loadToys();
+
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      if (tabs && tabs[0] && tabs[0].id) {
+        console.log('Toys initiate connexion on port "mapping"');
+        this.port = chrome.tabs.connect(tabs[0].id, { name: 'mapping' });
+        this.port.onMessage.addListener((message, port) => {
+          if (port.name === 'mapping') {
+            console.log('Toy onMessage ', message);
+          }
+        });
+      }
+    });
   }
-  // Les méthodes surveillées
+
   // Les méthodes d'instance
   private changeHeigth() {
     const client = this.helem ? this.helem.clientHeight : 0;
-    this.height = client-30
+    this.height = client - 30;
     // console.log(`client: ${client}px, height: ${this.height}px`)
   }
 
   private async loadToys() {
     if (this.screenDoc) {
-      this.toys = await fetchToys(this.screenDoc._id)
+      this.toys = await fetchToys(this.screenDoc._id);
       // console.log('fetchToys :', this.toys)
     }
   }
+
+  private startMap(toy: ToyDocument) {
+    if (this.port) {
+      this.port.postMessage({ action: 'start', toy });
+    }
+  }
+
   // Les méthodes statiques
 }
 </script>

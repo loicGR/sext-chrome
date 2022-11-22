@@ -32,7 +32,6 @@ export default class Screens extends Vue {
   @PropSync('pack', { default: '' }) private packId!: string | null;
   @PropSync('pictures', { default: [] }) private screenPictures!: PictureDocument[];
   @PropSync('screen', { default: null }) screenDoc!: ScreenDocument | null;
-
   @Prop({ default: null }) private prjid!: string | null;
 
   // Les propriétés

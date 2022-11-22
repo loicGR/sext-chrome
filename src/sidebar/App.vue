@@ -51,13 +51,14 @@ export default class App extends Vue {
     this.frameWidth = await iframeWidth();
     this.updateHeight();
 
-
-    chrome.runtime.onMessage.addListener(async message => {
-      // console.log('onMessage :', message)
+    chrome.runtime.onMessage.addListener(async (message, sender) => {
+      if (sender.tab) {
+        console.log('App - From content script:', message)
+      } else {
+        console.log('App - From extension:', message)
+      }
       if (message.from === 'iframe' && message.show && !this.user) {
-        // console.log('onMessage :', message)
         this.user = await getUserByAuthId();
-        // console.log('onMessage get user:', this.user);
       }
     });
 

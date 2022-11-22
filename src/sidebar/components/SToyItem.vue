@@ -72,6 +72,7 @@ export default class SToyItem extends Vue {
 
   private onClickMap() {
     console.log('onClickMap');
+    this.$emit('tomap')
   }
 
   // Les méthodes statiques

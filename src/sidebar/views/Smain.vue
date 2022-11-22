@@ -11,7 +11,7 @@
     </div>
     <toys v-if='screenDoc' :screen.sync='screenDoc' :shot-url='shotUrl'/>
     <screens v-else-if='packId' :pack.sync='packId' :pictures.sync='pictures' :prjid='project._id || null'
-             :screen.sync='screenDoc' />
+             :screen.sync='screenDoc'/>
     <packs v-else :pack.sync='packId' :tree='treePacks' />
   </div>
 </template>
