@@ -2,6 +2,8 @@
  * Ce script est un content script
  */
 
+import { currentElem, stopEventMapping, stopHighlight } from '@src/content/content.events';
+
 const IFRAME_ID = 'extension-frame-scapin';
 const IFRAME_WIDTH = 310;
 
@@ -29,19 +31,21 @@ const getIframe = () => {
 };
 
 export async function toggle() {
-  // console.log('toggle')
+  // console.log('toggle currentElem:', currentElem)
 
   let iframe = getIframe();
 
   if (iframe) {
     if (iframe.style.width === '0px') {
       // iframe.style.border = '1px solid #83c0e6'
-      iframe.style.visibility = 'visible'
-      iframe.style.width = `${IFRAME_WIDTH}px`
-      await chrome.runtime.sendMessage({ from: 'iframe', show: true } )
+      iframe.style.visibility = 'visible';
+      iframe.style.width = `${IFRAME_WIDTH}px`;
+      stopEventMapping()
+      stopHighlight()
+      await chrome.runtime.sendMessage({ from: 'iframe', show: true });
     } else {
-      iframe.style.width = '0px'
-      await chrome.runtime.sendMessage({ from: 'iframe', show: false })
+      iframe.style.width = '0px';
+      await chrome.runtime.sendMessage({ from: 'iframe', show: false });
       setTimeout(() => {
         if (iframe) {
           iframe.style.visibility = 'hidden';

@@ -17,9 +17,9 @@ export let mappingPort: Port | null = null
  */
 chrome.runtime.onMessage.addListener(async (message, sender) => {
   if (sender.tab) {
-    console.log('content - From content script:', message)
+    // console.log('content - From content script:', message)
   } else {
-    console.log('content - From extension:', message)
+    // console.log('content - From extension:', message)
   }
   if (message === 'toggle') {
     await toggle();

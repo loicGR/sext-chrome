@@ -53,9 +53,9 @@ export default class App extends Vue {
 
     chrome.runtime.onMessage.addListener(async (message, sender) => {
       if (sender.tab) {
-        console.log('App - From content script:', message)
+        // console.log('App - From content script:', message)
       } else {
-        console.log('App - From extension:', message)
+        // console.log('App - From extension:', message)
       }
       if (message.from === 'iframe' && message.show && !this.user) {
         this.user = await getUserByAuthId();
