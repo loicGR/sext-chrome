@@ -1,6 +1,7 @@
 export interface IBound {
-  idxNode: number,
-  from: IExploredElement | null
+  idxElem: number,
+  idxFrom: number
+  solution: IMap | null
 }
 
 export interface INode {
@@ -19,6 +20,15 @@ export interface IExploredElement {
   length: number,
   selector: string,
   elements: NodeListOf<Element>
+}
+
+export interface IMap {
+  key : string,
+  value: string
+}
+
+export interface IAttributes {
+  [key:string]: string
 }
 
 export interface UserDocument {

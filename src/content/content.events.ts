@@ -1,5 +1,6 @@
 import { showIframe } from '@src/content/sidebar.frame';
 import { mappingPort } from '@src/content/index';
+import ContentMapping from '@src/content/content.mapping';
 
 export let currentElem: HTMLElement | null = null
 
@@ -74,8 +75,11 @@ const clickEvent = async (event: Event) => {
 
   console.log('clickEvent event:', event);
 
+  stopHighlight()
   if (event.target) {
     clickEventListener(event.target)
+    const mapper = new ContentMapping()
+    mapper.findMapping(event.target as HTMLElement)
   }
   stopEventMapping();
 
