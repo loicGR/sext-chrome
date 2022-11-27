@@ -10,7 +10,7 @@ export default class ContentMapping {
     this.ancestors = this.getAncestors(elem);
     const nbAncestors = this.ancestors.length
     let solution: IBound[] = []
-    for (let i = nbAncestors; i > 0; i-- ) {
+    for (let i = nbAncestors - 1; i > 0; i-- ) {
       if (this.ancestors[i].tagName === 'IFRAME') {
         solution = this.collectLocalisationInformation(i, nbAncestors, solution)
       }
@@ -116,6 +116,7 @@ export default class ContentMapping {
     const classList = attributes.hasOwnProperty('class') ? attributes.class.trim().split(' ') : [];
     const rank = this.getRank(elem);
     let selector = '';
+    console.log('exploreElement elem:', elem)
     let key = elem.tagName === 'IFRAME' ? 'iframe' : 'selector';
 
     // Recherche d'une solution par l'identifiant id
@@ -188,7 +189,6 @@ export default class ContentMapping {
    */
   private query(elem: HTMLElement, selector: string, from: HTMLElement | null) {
     const elements = (from || document).querySelectorAll(selector);
-    // TODO filtrer la liste des éléments pour retirer ceux qui ne sont pas visibles
     console.log(`query(${selector}) => ${elements.length} elements found`);
     return elements.length === 1 && R.equals(elements[0], elem);
   }
@@ -204,24 +204,5 @@ export default class ContentMapping {
   private findBy(attributes: IAttributes, elem: HTMLElement, attr: string, from: HTMLElement | null) {
     return attributes.hasOwnProperty(attr) && this.query(elem, `[${attr}="${attributes[attr]}"]`, from);
   }
-
-  // private searchInClassCombination = (dict: IExploredElement[], elements: NodeListOf<Element>, classList: string[]) {
-  //
-  //   classList = R.filter(n => n != '', classList);
-  //   classList.forEach((item: any, index: any) => { classList[index] = '.' + item;});
-  //
-  //   const classCombinationList = classList.flatMap((v: any, i: any) => classList.slice(i + 1).map((w: any) => v + w));
-  //
-  //   classList = R.concat(classList, classCombinationList);
-  //
-  //   for (let c = 0; c < classList.length; c++) {
-  //     const classElements = document.querySelectorAll(classList[c]);
-  //     if (classElements.length >= 1 && classElements.length < elements.length) {
-  //       // console.log('class: ' + classList[c] + ', length: ' + classElements.length);
-  //       dict.push({ 'length': classElements.length, 'selector': classList[c], 'elements': classElements });
-  //     }
-  //   }
-  // }
-
 
 }
