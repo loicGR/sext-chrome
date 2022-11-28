@@ -2,67 +2,125 @@ import { showIframe } from '@src/content/sidebar.frame';
 import { mappingPort } from '@src/content/index';
 import ContentMapping from '@src/content/content.mapping';
 
-export let currentElem: HTMLElement | null = null
+let iframes: HTMLIFrameElement[] = [];
+let currentElem: HTMLElement | null = null;
 
-export function startEventMapping() {
-  // console.log('addEventListeners')
-  document.addEventListener('mouseover', mouseOverEvent, false);
-  document.addEventListener('mouseout', mouseOutEvent, false);
-  document.addEventListener('keydown', keyPressEvent, true);
+/**
+ * Démarrage du mapping suite à réception du message sur le port d'écoute mappingPort
+ */
+export function startMapping() {
+  iframes = [];
+  currentElem = null;
+  startEventMapping();
 }
 
-export function stopEventMapping() {
+export function stopMapping() {
+  for(const iframe of iframes) {
+    const iDoc = iframe.contentDocument || iframe.contentWindow
+    if (iDoc) {
+      stopEventMapping(iDoc);
+    }
+  }
+  stopHighlight()
+  stopEventMapping()
+}
+
+function startEventMapping(from: Document | Window | null = null) {
+  // console.log('addEventListeners')
+  (from || document).addEventListener('mouseover', mouseOverEvent, false);
+  (from || document).addEventListener('mouseout', mouseOutEvent, false);
+  (from || document).addEventListener('keydown', keyPressEvent, true);
+}
+
+function stopEventMapping(from: Document | Window | null = null) {
   // console.log('removeEventListeners')
-  document.removeEventListener('mouseover', mouseOverEvent, false);
-  document.removeEventListener('mouseout', mouseOutEvent, false);
-  document.removeEventListener('keydown', keyPressEvent, true);
+  (from || document).removeEventListener('mouseover', mouseOverEvent, false);
+  (from || document).removeEventListener('mouseout', mouseOutEvent, false);
+  (from || document).removeEventListener('keydown', keyPressEvent, true);
 
 }
 
 function clickEventListener(target: EventTarget, add: boolean = false) {
   // console.log(`clickEventListener add:${add} on:`, target)
   if (add) {
-    target.addEventListener('click', clickEvent, true)
+    target.addEventListener('click', clickEvent, true);
   } else {
-    target.removeEventListener('click', clickEvent, true)
+    target.removeEventListener('click', clickEvent, true);
   }
 }
 
-const mouseOverEvent = async (event: MouseEvent) => {
-  // console.log('mouveOverEvent event:', event.target)
-  if (event.target) {
-    clickEventListener(event.target, true)
-    currentElem = event.target as HTMLElement
-    currentElem.style.border = '2px dashed #83c0e6';
-    currentElem.style.boxShadow = '0 0 10px #83c0e6';
-    currentElem.focus()
-    currentElem.style
-  }
-};
-
-export function stopHighlight() {
-  if (currentElem) {
-    currentElem.style.border = '';
-    currentElem.style.boxShadow = '';
+function iframeEventListener(elem: HTMLIFrameElement, add: boolean = false) {
+  try {
+    const iDoc = elem.contentDocument || elem.contentWindow;
+    if (add) {
+      console.log('iframeEventListener iDoc: ', iDoc)
+      startEventMapping(iDoc);
+      iframes.push(elem);
+    } else {
+      stopEventMapping(iDoc);
+      iframes.pop();
+    }
+  } catch (e: any) {
+    if (add) {
+      alert(`can't get inside an iframe`)
+    }
+    console.log('iframeEventListener failed :', e.message);
   }
 }
 
-const mouseOutEvent = async (event: MouseEvent) => {
-  // console.log('mouveOutEvent event:', event.target)
+const mouseOverEvent = (event: Event) => {
+  console.log('mouveOverEvent event:', event.target);
   if (event.target) {
-    clickEventListener(event.target)
+    const elem = event.target as HTMLElement;
+    if (elem.tagName === 'IFRAME') {
+      iframeEventListener(<HTMLIFrameElement>elem, true);
+    }
     stopHighlight()
+    clickEventListener(event.target, true);
+    setFocus(elem)
+    elem.style.outline = '2px dashed #83c0e6';
+    elem.style.boxShadow = '0 0 10px #83c0e6';
+    currentElem = elem;
   }
 };
 
-export const keyPressEvent = (event: KeyboardEvent) => {
-  event.stopPropagation()
-  event.preventDefault()
-  console.log('keyPressEvent event:', event.code)
-  if (event.code === 'Escape') {
-    stopHighlight()
-    stopEventMapping()
-    showIframe()
+function setFocus(elem: HTMLElement) {
+  const savedTabIndex = elem.getAttribute('tabindex')
+  elem.setAttribute('tabindex', '-1');
+  elem.focus();
+  if (savedTabIndex) {
+    elem.setAttribute('tabindex', savedTabIndex);
+  }
+}
+
+export function stopHighlight(elem: HTMLElement | null = null) {
+  const el = elem ? elem : currentElem
+  if (el) {
+    el.style.outline = '';
+    el.style.boxShadow = '';
+  }
+}
+
+const mouseOutEvent = (event: Event) => {
+  console.log('mouveOutEvent event:', event.target);
+  if (event.target) {
+    const elem = event.target as HTMLElement;
+    if (elem.tagName === 'IFRAME') {
+      iframeEventListener(<HTMLIFrameElement>elem);
+    }
+    clickEventListener(event.target);
+    stopHighlight(elem);
+  }
+};
+
+export const keyPressEvent = (event: Event) => {
+  event.stopPropagation();
+  event.preventDefault();
+  const code = (event as KeyboardEvent).code;
+  console.log('keyPressEvent event:', code);
+  if (code === 'Escape') {
+    stopMapping()
+    showIframe();
   }
 
 };
@@ -75,16 +133,15 @@ const clickEvent = async (event: Event) => {
 
   console.log('clickEvent event:', event);
 
-  stopHighlight()
-  if (event.target) {
-    clickEventListener(event.target)
-    const mapper = new ContentMapping()
-    mapper.findMapping(event.target as HTMLElement)
+  if (currentElem) {
+    clickEventListener(currentElem);
+    const mapper = new ContentMapping();
+    mapper.findMapping(currentElem, iframes);
   }
-  stopEventMapping();
+  stopMapping();
 
   if (mappingPort) {
-    mappingPort.postMessage({action: 'end', target: event.target});
+    mappingPort.postMessage({ action: 'end', target: event.target });
   }
-  showIframe()
+  showIframe();
 };

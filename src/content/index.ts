@@ -1,5 +1,5 @@
 import { hideIframe, loadIframe, toggle } from '@src/content/sidebar.frame';
-import { startEventMapping } from '@src/content/content.events';
+import { startMapping } from '@src/content/content.events';
 import Port = chrome.runtime.Port;
 
 
@@ -32,8 +32,8 @@ chrome.runtime.onConnect.addListener(port => {
     console.log('Content onConnect port "mapping"')
     port.onMessage.addListener(msg => {
       console.log('Content onMessage :', msg)
+      startMapping()
       hideIframe()
-      startEventMapping()
     })
     port.onDisconnect.addListener(() => {
       console.log('Content onDisconnect')

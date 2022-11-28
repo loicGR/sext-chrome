@@ -2,7 +2,7 @@
  * Ce script est un content script
  */
 
-import { currentElem, stopEventMapping, stopHighlight } from '@src/content/content.events';
+import { stopHighlight, stopMapping } from '@src/content/content.events';
 
 const IFRAME_ID = 'extension-frame-scapin';
 const IFRAME_WIDTH = 310;
@@ -40,7 +40,7 @@ export async function toggle() {
       // iframe.style.border = '1px solid #83c0e6'
       iframe.style.visibility = 'visible';
       iframe.style.width = `${IFRAME_WIDTH}px`;
-      stopEventMapping()
+      stopMapping()
       stopHighlight()
       await chrome.runtime.sendMessage({ from: 'iframe', show: true });
     } else {

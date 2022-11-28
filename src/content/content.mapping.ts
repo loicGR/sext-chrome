@@ -2,20 +2,20 @@ import { IAttributes, IBound, IMap } from '@src/interfaces';
 import * as R from 'ramda';
 
 export default class ContentMapping {
+  private rootDocument: Document | Window | null = document
   private ancestors: HTMLElement[] = [];
   private excludeAttributes = ['placeholder', 'method', 'style', 'value', 'class'];
-  private solution: IBound[] = [];
 
-  public findMapping(elem: HTMLElement) {
-    this.ancestors = this.getAncestors(elem);
-    const nbAncestors = this.ancestors.length
+  public findMapping(elem: HTMLElement, iframes: HTMLIFrameElement[]) {
+
     let solution: IBound[] = []
-    for (let i = nbAncestors - 1; i > 0; i-- ) {
-      if (this.ancestors[i].tagName === 'IFRAME') {
-        solution = this.collectLocalisationInformation(i, nbAncestors, solution)
-      }
+    for (const iframe of iframes) {
+      this.ancestors = this.getAncestors(iframe)
+      solution = this.collectLocalisationInformation(0, this.ancestors.length, solution)
+      this.rootDocument = iframe.contentDocument || iframe.contentWindow
     }
-    solution = this.collectLocalisationInformation(0, nbAncestors, solution)
+    this.ancestors = this.getAncestors(elem);
+    solution = this.collectLocalisationInformation(0, this.ancestors.length, solution)
     console.log('findSolution :', solution);
   }
 
@@ -117,7 +117,7 @@ export default class ContentMapping {
     const rank = this.getRank(elem);
     let selector = '';
     console.log('exploreElement elem:', elem)
-    let key = elem.tagName === 'IFRAME' ? 'iframe' : 'selector';
+    let selectorKey = elem.tagName === 'IFRAME' ? 'iframe' : 'selector';
 
     // Recherche d'une solution par l'identifiant id
     if (this.findBy(attributes, elem, 'id', from)) {
@@ -144,7 +144,7 @@ export default class ContentMapping {
     // Recherche d'une solution par le tagName et son rang dans la fratrie
     selector = `${elem.tagName}${rank > 1 ? `:nth-child(${rank})` : ''}`;
     if (this.query(elem, selector, from)) {
-      return { key, value: selector };
+      return { key: selectorKey, value: selector };
     }
 
     // Recherche d'une solution par association du tag et d'une classe
@@ -152,7 +152,7 @@ export default class ContentMapping {
       if (cls.length > 0) {
         selector = `${elem.tagName}.${cls}${rank > 1 ? `:nth-child(${rank})` : ''}`;
         if (this.query(elem, selector, from)) {
-          return { key, value: selector };
+          return { key: selectorKey, value: selector };
         }
       }
     }
@@ -162,14 +162,14 @@ export default class ContentMapping {
       if (!this.excludeAttributes.includes(key)) {
         selector = `${elem.tagName}[${key}="${value}"]${rank > 1 ? `:nth-child(${rank})` : ''}`;
         if (this.query(elem, selector, from)) {
-          return { key, value: selector };
+          return { key: selectorKey, value: selector };
         }
 
         // Recherche d'une solution par association du tag d'un attribut et d'une classe
         for (const cls of classList) {
           selector = `${elem.tagName}.${cls}[${key}="${value}"]${rank > 1 ? `:nth-child(${rank})` : ''}`;
           if (this.query(elem, selector, from)) {
-            return { key, value: selector };
+            return { key: selectorKey, value: selector };
           }
         }
       }
@@ -188,7 +188,8 @@ export default class ContentMapping {
    * @private
    */
   private query(elem: HTMLElement, selector: string, from: HTMLElement | null) {
-    const elements = (from || document).querySelectorAll(selector);
+    const iDoc = (this.rootDocument as (Document | null)) || document
+    const elements = (from || iDoc).querySelectorAll(selector);
     console.log(`query(${selector}) => ${elements.length} elements found`);
     return elements.length === 1 && R.equals(elements[0], elem);
   }
