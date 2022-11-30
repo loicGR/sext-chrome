@@ -17,6 +17,7 @@ export default class ContentMapping {
     this.ancestors = this.getAncestors(elem);
     solution = this.collectLocalisationInformation(0, this.ancestors.length, solution)
     console.log('findSolution :', solution);
+    return solution
   }
 
   /**
@@ -98,11 +99,11 @@ export default class ContentMapping {
         const elem = this.ancestors[idxElem];
         const solution = this.exploreElement(elem, from);
         if (solution) {
-          return {idxElem, idxFrom: fromAncestorIndex, solution}
+          return {idxElem, idxFrom: fromAncestorIndex, map: solution}
         }
       }
     }
-    return {idxElem: elemAncestorIndex, idxFrom: fromAncestorIndex, solution: null}
+    return {idxElem: elemAncestorIndex, idxFrom: fromAncestorIndex, map: null}
   }
 
   /**

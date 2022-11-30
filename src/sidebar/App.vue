@@ -25,7 +25,6 @@
 <script lang='ts'>
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import Login from '@src/sidebar/views/Login.vue';
-import { iframeWidth } from '@src/utils/storage.utils';
 import { ProjectDocument, UserDocument } from '@src/interfaces';
 import { getUserByAuthId } from '@src/axios/user.axios';
 import Project from '@src/sidebar/views/Project.vue';
@@ -37,10 +36,10 @@ import Smain from '@src/sidebar/views/Smain.vue';
 export default class App extends Vue {
   // Les props
   // Les propriétés
-  private frameWidth = 0;
+  private frameWidth = window.innerWidth;
   private user: UserDocument | null = null;
   private project: ProjectDocument | null = null;
-  private maxHeight: number = 500;
+  private maxHeight = window.innerHeight;
   private imgHeight: number = 120;
 
   // Les propriétés calculées
@@ -48,7 +47,6 @@ export default class App extends Vue {
   public async mounted() {
     // console.log('mounted App.vue')
 
-    this.frameWidth = await iframeWidth();
     this.updateHeight();
 
     chrome.runtime.onMessage.addListener(async (message, sender) => {

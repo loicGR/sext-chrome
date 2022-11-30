@@ -22,7 +22,7 @@
 
 <script lang='ts'>
 import { Component, Prop, PropSync, Vue } from 'vue-property-decorator';
-import { ScreenDocument, ToyDocument } from '@src/interfaces';
+import { IMessage, ScreenDocument, ToyDocument } from '@src/interfaces';
 import { fetchToys } from '@src/axios/toy.axios';
 import SSvgIcons from '@src/sidebar/components/SSvgIcons.vue';
 import SToyItem from '@src/sidebar/components/SToyItem.vue';
@@ -42,7 +42,7 @@ export default class Toys extends Vue {
   private toys: ToyDocument[] = [];
   private size = 200;
   private currentToyId: string | null = null;
-  private port: chrome.runtime.Port | null = null;
+  private mappingPort: chrome.runtime.Port | null = null;
 
   // Les propriétés calculées
   // Les hooks
@@ -51,19 +51,9 @@ export default class Toys extends Vue {
     this.helem = document.getElementById(this.ELEMID);
     this.changeHeigth();
     addEventListener('resize', this.changeHeigth);
+    this.connect();
     await this.loadToys();
 
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-      if (tabs && tabs[0] && tabs[0].id) {
-        console.log('Toys initiate connexion on port "mapping"');
-        this.port = chrome.tabs.connect(tabs[0].id, { name: 'mapping' });
-        this.port.onMessage.addListener((message, port) => {
-          if (port.name === 'mapping') {
-            console.log('Toy onMessage ', message);
-          }
-        });
-      }
-    });
   }
 
   // Les méthodes d'instance
@@ -80,9 +70,26 @@ export default class Toys extends Vue {
     }
   }
 
+  private connect() {
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      if (tabs && tabs[0] && tabs[0].id) {
+        const tabId = tabs[0].id;
+        this.mappingPort = chrome.tabs.connect(tabId, { name: 'toys' });
+        console.log(`Toys tabs.connect tabId:${tabId}, port:`, this.mappingPort);
+
+        this.mappingPort.onMessage.addListener((msg: IMessage) => {
+          if (msg.action === 'stop') {
+            console.log('Toys receive message stop data:', msg.data)
+          }
+        })
+
+      }
+    });
+  }
+
   private startMap(toy: ToyDocument) {
-    if (this.port) {
-      this.port.postMessage({ action: 'start', toy });
+    if (this.mappingPort) {
+      this.mappingPort.postMessage({ action: 'start', data: toy });
     }
   }
 

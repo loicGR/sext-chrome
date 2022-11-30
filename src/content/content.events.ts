@@ -1,9 +1,12 @@
 import { showIframe } from '@src/content/sidebar.frame';
-import { mappingPort } from '@src/content/index';
 import ContentMapping from '@src/content/content.mapping';
+import { BUBBLE_ID, bubblePosition, hideBubble, showBubble } from '@src/content/content.bubble';
+import { IBound } from '@src/interfaces';
+import { bubblePostMessage, toysPostMessage } from '@src/content/index';
 
 let iframes: HTMLIFrameElement[] = [];
 let currentElem: HTMLElement | null = null;
+let currentSolution: IBound[] = [];
 
 /**
  * Démarrage du mapping suite à réception du message sur le port d'écoute mappingPort
@@ -15,18 +18,20 @@ export function startMapping() {
 }
 
 export function stopMapping() {
-  for(const iframe of iframes) {
-    const iDoc = iframe.contentDocument || iframe.contentWindow
+  for (const iframe of iframes) {
+    const iDoc = iframe.contentDocument || iframe.contentWindow;
     if (iDoc) {
       stopEventMapping(iDoc);
     }
   }
-  stopHighlight()
-  stopEventMapping()
+  hideBubble();
+  stopHighlight();
+  stopEventMapping();
 }
 
 function startEventMapping(from: Document | Window | null = null) {
   // console.log('addEventListeners')
+  (from || document).addEventListener('mousemove', mouseMoveEvent, false);
   (from || document).addEventListener('mouseover', mouseOverEvent, false);
   (from || document).addEventListener('mouseout', mouseOutEvent, false);
   (from || document).addEventListener('keydown', keyPressEvent, true);
@@ -34,6 +39,7 @@ function startEventMapping(from: Document | Window | null = null) {
 
 function stopEventMapping(from: Document | Window | null = null) {
   // console.log('removeEventListeners')
+  (from || document).removeEventListener('mousemove', mouseMoveEvent, false);
   (from || document).removeEventListener('mouseover', mouseOverEvent, false);
   (from || document).removeEventListener('mouseout', mouseOutEvent, false);
   (from || document).removeEventListener('keydown', keyPressEvent, true);
@@ -53,7 +59,7 @@ function iframeEventListener(elem: HTMLIFrameElement, add: boolean = false) {
   try {
     const iDoc = elem.contentDocument || elem.contentWindow;
     if (add) {
-      console.log('iframeEventListener iDoc: ', iDoc)
+      console.log('iframeEventListener iDoc: ', iDoc);
       startEventMapping(iDoc);
       iframes.push(elem);
     } else {
@@ -62,30 +68,53 @@ function iframeEventListener(elem: HTMLIFrameElement, add: boolean = false) {
     }
   } catch (e: any) {
     if (add) {
-      alert(`can't get inside an iframe`)
+      bubblePostMessage('solution', {solution: null})
     }
     console.log('iframeEventListener failed :', e.message);
   }
 }
 
+const mouseMoveEvent = (event: Event) => {
+  bubblePosition(event as MouseEvent);
+  showBubble();
+};
+
 const mouseOverEvent = (event: Event) => {
   console.log('mouveOverEvent event:', event.target);
   if (event.target) {
     const elem = event.target as HTMLElement;
-    if (elem.tagName === 'IFRAME') {
-      iframeEventListener(<HTMLIFrameElement>elem, true);
+    if (elem.getAttribute('id') !== BUBBLE_ID) {
+      if (elem.tagName === 'IFRAME') {
+        iframeEventListener(<HTMLIFrameElement>elem, true);
+      }
+      // Supprime la surbrillance de l'actuel currentElem
+      stopHighlight();
+
+      // Installe l'écoute de l'évènement clic sur l'élément survolé
+      clickEventListener(event.target, true);
+
+      // Positionne le focus pour garantir l'écoute des évènements du clavier
+      setFocus(elem);
+
+      // Installe la surbrillance sur l'élément survolé
+      elem.style.outline = '2px dashed #83c0e6';
+      elem.style.boxShadow = '0 0 10px #83c0e6';
+
+      // Recherche les solutions pour l'élément survolé
+      const mapper = new ContentMapping();
+      currentSolution = mapper.findMapping(elem, iframes);
+
+      // Transmet la solution à la bulle
+      bubblePostMessage('solution', currentSolution);
+
+      // Initialise currentElem
+      currentElem = elem;
     }
-    stopHighlight()
-    clickEventListener(event.target, true);
-    setFocus(elem)
-    elem.style.outline = '2px dashed #83c0e6';
-    elem.style.boxShadow = '0 0 10px #83c0e6';
-    currentElem = elem;
   }
 };
 
 function setFocus(elem: HTMLElement) {
-  const savedTabIndex = elem.getAttribute('tabindex')
+  const savedTabIndex = elem.getAttribute('tabindex');
   elem.setAttribute('tabindex', '-1');
   elem.focus();
   if (savedTabIndex) {
@@ -94,7 +123,7 @@ function setFocus(elem: HTMLElement) {
 }
 
 export function stopHighlight(elem: HTMLElement | null = null) {
-  const el = elem ? elem : currentElem
+  const el = elem ? elem : currentElem;
   if (el) {
     el.style.outline = '';
     el.style.boxShadow = '';
@@ -119,7 +148,7 @@ export const keyPressEvent = (event: Event) => {
   const code = (event as KeyboardEvent).code;
   console.log('keyPressEvent event:', code);
   if (code === 'Escape') {
-    stopMapping()
+    stopMapping();
     showIframe();
   }
 
@@ -133,15 +162,9 @@ const clickEvent = async (event: Event) => {
 
   console.log('clickEvent event:', event);
 
-  if (currentElem) {
-    clickEventListener(currentElem);
-    const mapper = new ContentMapping();
-    mapper.findMapping(currentElem, iframes);
-  }
   stopMapping();
-
-  if (mappingPort) {
-    mappingPort.postMessage({ action: 'end', target: event.target });
-  }
   showIframe();
+
+  toysPostMessage('stop', currentSolution);
+
 };

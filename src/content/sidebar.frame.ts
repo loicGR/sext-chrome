@@ -7,13 +7,8 @@ import { stopHighlight, stopMapping } from '@src/content/content.events';
 const IFRAME_ID = 'extension-frame-scapin';
 const IFRAME_WIDTH = 310;
 
-export async function loadIframe() {
+export function loadIframe() {
   // console.log('loadIframe')
-
-  // Sauvegarde de la largeur pour sa réutilisation dans App.vue
-  // La constante IFRAME_WIDTH peut donc être modifiée sans que cela ait un impact sur App.vue
-  await chrome.storage.sync.set({ 'IFRAME_WIDTH': IFRAME_WIDTH });
-  await chrome.storage.sync.set({ sapiUrl: 'https://scapin.loicg.com/sapi' });
 
   const iframe = document.createElement('iframe');
   iframe.setAttribute('id', IFRAME_ID);

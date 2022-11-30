@@ -1,10 +1,5 @@
 import { verify } from 'jsonwebtoken-esm';
 
-export const iframeWidth = async () => {
-  const {IFRAME_WIDTH} = await chrome.storage.sync.get('IFRAME_WIDTH')
-  return IFRAME_WIDTH as number
-}
-
 export class UserEmail {
   public static get = async () => {
     const {userEmail} = await chrome.storage.sync.get('userEmail')

@@ -1,7 +1,7 @@
 export interface IBound {
   idxElem: number,
   idxFrom: number
-  solution: IMap | null
+  map: IMap | null
 }
 
 export interface INode {
@@ -96,4 +96,9 @@ export interface ToyDocument {
   }
   screen: string
   mapping: {key: string, value: string}[]
+}
+
+export interface IMessage {
+  action: string,
+  data: any
 }

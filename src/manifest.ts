@@ -35,7 +35,7 @@ const manifest: ManifestType = {
   devtools_page: 'src/devtools/index.html',
   web_accessible_resources: [
     {
-      resources: ['icon128.png', 'src/sidebar/index.html'],
+      resources: ['icon128.png', 'src/sidebar/index.html', 'src/bubble/index.html'],
       matches: ['<all_urls>'],
     },
   ],

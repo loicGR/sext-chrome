@@ -25,7 +25,8 @@ export default defineConfig({
         content: resolve(src, 'content', 'index.ts'),
         background: resolve(src, 'background', 'index.ts'),
         options: resolve(src, 'options', 'index.html'),
-        storage: resolve(src, 'utils', 'storage.utils.ts')
+        storage: resolve(src, 'utils', 'storage.utils.ts'),
+        bubble: resolve(src, 'bubble', 'index.html')
       },
       output: {
         entryFileNames: chunk => `src/${chunk.name}/index.js`,
