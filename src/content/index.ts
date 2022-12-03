@@ -47,14 +47,14 @@ function initiatePort() {
 
 export function bubblePostMessage(action: string, data: any) {
   if (bubblePort) {
-    console.log(`bubblePostMessage action:${action}, data:`, data)
+    // console.log(`bubblePostMessage action:${action}, data:`, data)
     bubblePort.postMessage({action, data})
   }
 }
 
 export function toysPostMessage(action: string, data: any) {
   if (toysPort) {
-    console.log(`sidebarPostMessage action:${action}, data:`, data)
+    // console.log(`toysPostMessage action:${action}, data:`, data)
     toysPort.postMessage({action, data})
   }
 }

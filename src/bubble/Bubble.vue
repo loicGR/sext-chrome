@@ -1,5 +1,5 @@
 <template>
-  <div class='bg-sbg_blue rounded border border-s_blue h-full w-full px-1' :style='`height: ${height}px`'>
+  <div class='bg-sbg_blue rounded border border-s_blue h-full w-full px-1' :style='`height: ${height}px; overflow: hidden`'>
     <!--    Icon type et Nom de l'élément graphique-->
     <div v-if='toy' class=' flex flex-row items-center text-base'>
       <s-svg-icons v-if='toy.type' :name='toy.type.icon' :alt='toy.type.typename' />
@@ -7,7 +7,7 @@
     </div>
 
     <!--    Visualisation du mapping-->
-    <div class='flex flex-col'>
+    <div class='flex flex-col h-full'>
       <div v-if='solutions.length '>
         <div class='flex flex-row items-center'>
           <div class='w-16 '>
@@ -78,7 +78,7 @@ export default class Bubble extends Vue {
         console.log(`Bubble tabs.connect tabId:${tabId}, port:`, port);
 
         port.onMessage.addListener((msg: IMessage) => {
-          console.log('Bubble.vue onMessage :', msg);
+          // console.log('Bubble.vue onMessage :', msg);
           if (msg.action === 'toy') {
             this.toy = msg.data;
           }

@@ -1,12 +1,13 @@
 <template>
   <div class='flex flex-col h-full'>
-    <div class='flex flex-row px-2 pt-2'>
+    <div class='flex flex-row p-2'>
       <button class='btn btn-blue px-1 py-0 flex flex-row items-center' @click='screenDoc = null'>
         <s-svg-icons name='arrow-left' />
         <span class='mx-1'>Screens List</span>
       </button>
     </div>
     <div :id='ELEMID' class='mt-2 h-full'>
+      <s-loading :loading='loading'/>
       <div class='overflow-y-auto px-2' :style='`height:  ${height}px`'>
         <div class='flex flex-col'>
           <div class='flex flex-row justify-center' :style='`height: ${size}px; min-width:${size}px !important`'>
@@ -22,13 +23,14 @@
 
 <script lang='ts'>
 import { Component, Prop, PropSync, Vue } from 'vue-property-decorator';
-import { IMessage, ScreenDocument, ToyDocument } from '@src/interfaces';
-import { fetchToys } from '@src/axios/toy.axios';
+import { IBound, IMap, IMessage, ScreenDocument, ToyDocument } from '@src/interfaces';
+import { fetchToys, updateToy } from '@src/axios/toy.axios';
 import SSvgIcons from '@src/sidebar/components/SSvgIcons.vue';
 import SToyItem from '@src/sidebar/components/SToyItem.vue';
+import SLoading from '@src/sidebar/components/SLoading.vue';
 
 @Component({
-  components: { SToyItem, SSvgIcons },
+  components: { SLoading, SToyItem, SSvgIcons },
 })
 export default class Toys extends Vue {
   // Les props
@@ -43,6 +45,8 @@ export default class Toys extends Vue {
   private size = 200;
   private currentToyId: string | null = null;
   private mappingPort: chrome.runtime.Port | null = null;
+  private mappingToy: ToyDocument | null = null;
+  private loading: boolean = false
 
   // Les propriétés calculées
   // Les hooks
@@ -65,7 +69,9 @@ export default class Toys extends Vue {
 
   private async loadToys() {
     if (this.screenDoc) {
+      this.loading = true
       this.toys = await fetchToys(this.screenDoc._id);
+      this.loading = false
       // console.log('fetchToys :', this.toys)
     }
   }
@@ -77,9 +83,21 @@ export default class Toys extends Vue {
         this.mappingPort = chrome.tabs.connect(tabId, { name: 'toys' });
         console.log(`Toys tabs.connect tabId:${tabId}, port:`, this.mappingPort);
 
-        this.mappingPort.onMessage.addListener((msg: IMessage) => {
-          if (msg.action === 'stop') {
-            console.log('Toys receive message stop data:', msg.data)
+        this.mappingPort.onMessage.addListener(async (msg: IMessage) => {
+          if (msg.action === 'stop' && this.mappingToy) {
+            console.log(`Toys receive 'stop' message, data:`, msg.data)
+            const mapping: IMap[] = []
+           const bounds = (msg.data as IBound[])
+            bounds.forEach(b => {
+              if (b.map) mapping.push(b.map);
+            })
+            this.loading = true
+            await updateToy(this.mappingToy._id, {mapping})
+            await this.loadToys()
+          }
+          if (msg.action === 'cancel') {
+            console.log(`Toys receive 'cancel' message`)
+            this.mappingToy = null
           }
         })
 
@@ -89,6 +107,7 @@ export default class Toys extends Vue {
 
   private startMap(toy: ToyDocument) {
     if (this.mappingPort) {
+      this.mappingToy = toy
       this.mappingPort.postMessage({ action: 'start', data: toy });
     }
   }

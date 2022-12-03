@@ -4,10 +4,10 @@ import * as R from 'ramda';
 export default class ContentMapping {
   private rootDocument: Document | Window | null = document
   private ancestors: HTMLElement[] = [];
-  private excludeAttributes = ['placeholder', 'method', 'style', 'value', 'class'];
+  private excludeAttributes = ['placeholder', 'method', 'style', 'value', 'class', 'tabindex'];
 
   public findMapping(elem: HTMLElement, iframes: HTMLIFrameElement[]) {
-
+    console.groupCollapsed('Search mapping')
     let solution: IBound[] = []
     for (const iframe of iframes) {
       this.ancestors = this.getAncestors(iframe)
@@ -17,6 +17,7 @@ export default class ContentMapping {
     this.ancestors = this.getAncestors(elem);
     solution = this.collectLocalisationInformation(0, this.ancestors.length, solution)
     console.log('findSolution :', solution);
+    console.groupEnd()
     return solution
   }
 
@@ -143,7 +144,13 @@ export default class ContentMapping {
     }
 
     // Recherche d'une solution par le tagName et son rang dans la fratrie
-    selector = `${elem.tagName}${rank > 1 ? `:nth-child(${rank})` : ''}`;
+    selector = `${elem.tagName}`;
+    if (this.query(elem, selector, from)) {
+      return { key: selectorKey, value: selector };
+    }
+
+    // Même recherche en prenant en compte le rang dans la fratrie
+    selector = `${elem.tagName}:nth-child(${rank})`;
     if (this.query(elem, selector, from)) {
       return { key: selectorKey, value: selector };
     }
@@ -151,7 +158,17 @@ export default class ContentMapping {
     // Recherche d'une solution par association du tag et d'une classe
     for (const cls of classList) {
       if (cls.length > 0) {
-        selector = `${elem.tagName}.${cls}${rank > 1 ? `:nth-child(${rank})` : ''}`;
+        selector = `${elem.tagName}.${cls}`;
+        if (this.query(elem, selector, from)) {
+          return { key: selectorKey, value: selector };
+        }
+      }
+    }
+
+    // Même recherche en prenant en compte le rang dans la fratrie
+    for (const cls of classList) {
+      if (cls.length > 0) {
+        selector = `${elem.tagName}.${cls}:nth-child(${rank})`;
         if (this.query(elem, selector, from)) {
           return { key: selectorKey, value: selector };
         }
@@ -161,14 +178,31 @@ export default class ContentMapping {
     // Recherche d'une solution par association du tag et d'un attribut
     for (const [key, value] of Object.entries(attributes)) {
       if (!this.excludeAttributes.includes(key)) {
-        selector = `${elem.tagName}[${key}="${value}"]${rank > 1 ? `:nth-child(${rank})` : ''}`;
+        selector = `${elem.tagName}[${key}="${value}"]`;
+        if (this.query(elem, selector, from)) {
+          return { key: selectorKey, value: selector };
+        }
+        // Recherche d'une solution par association du tag d'un attribut et d'une classe
+        for (const cls of classList) {
+          selector = `${elem.tagName}.${cls}[${key}="${value}"]`;
+          if (this.query(elem, selector, from)) {
+            return { key: selectorKey, value: selector };
+          }
+        }
+      }
+    }
+
+    // Même recherche en prenant en compte le rang dans la fratrie
+    for (const [key, value] of Object.entries(attributes)) {
+      if (!this.excludeAttributes.includes(key)) {
+        selector = `${elem.tagName}[${key}="${value}"]:nth-child(${rank})`;
         if (this.query(elem, selector, from)) {
           return { key: selectorKey, value: selector };
         }
 
         // Recherche d'une solution par association du tag d'un attribut et d'une classe
         for (const cls of classList) {
-          selector = `${elem.tagName}.${cls}[${key}="${value}"]${rank > 1 ? `:nth-child(${rank})` : ''}`;
+          selector = `${elem.tagName}.${cls}[${key}="${value}"]:nth-child(${rank})`;
           if (this.query(elem, selector, from)) {
             return { key: selectorKey, value: selector };
           }

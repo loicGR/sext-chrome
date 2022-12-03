@@ -4,24 +4,6 @@ export interface IBound {
   map: IMap | null
 }
 
-export interface INode {
-  nodes: INodeElement[],
-  from: IExploredElement | null
-}
-
-export interface INodeElement {
-  tagName: string,
-  index: number,
-  text: string,
-  attributes: any
-}
-
-export interface IExploredElement {
-  length: number,
-  selector: string,
-  elements: NodeListOf<Element>
-}
-
 export interface IMap {
   key : string,
   value: string
@@ -95,9 +77,12 @@ export interface ToyDocument {
     typename: string
   }
   screen: string
-  mapping: {key: string, value: string}[]
+  mapping: IMap[]
 }
 
+/**
+ * Représente la structure des messages de communication entre la page explorée, l'extension Scapin et la bulle de mapping
+ */
 export interface IMessage {
   action: string,
   data: any

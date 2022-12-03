@@ -80,7 +80,7 @@ const mouseMoveEvent = (event: Event) => {
 };
 
 const mouseOverEvent = (event: Event) => {
-  console.log('mouveOverEvent event:', event.target);
+  // console.log('mouveOverEvent event:', event.target);
   if (event.target) {
     const elem = event.target as HTMLElement;
     if (elem.getAttribute('id') !== BUBBLE_ID) {
@@ -131,7 +131,7 @@ export function stopHighlight(elem: HTMLElement | null = null) {
 }
 
 const mouseOutEvent = (event: Event) => {
-  console.log('mouveOutEvent event:', event.target);
+  // console.log('mouveOutEvent event:', event.target);
   if (event.target) {
     const elem = event.target as HTMLElement;
     if (elem.tagName === 'IFRAME') {
@@ -150,6 +150,7 @@ export const keyPressEvent = (event: Event) => {
   if (code === 'Escape') {
     stopMapping();
     showIframe();
+    toysPostMessage('cancel', null);
   }
 
 };
@@ -160,8 +161,10 @@ const clickEvent = async (event: Event) => {
   event.stopImmediatePropagation();
   event.stopPropagation();
 
-  console.log('clickEvent event:', event);
-
+  // console.log('clickEvent event:', event);
+  if (event.target) {
+    clickEventListener(event.target);
+  }
   stopMapping();
   showIframe();
 
