@@ -143,14 +143,8 @@ export default class ContentMapping {
       return { key: 'role', value: attributes.name };
     }
 
-    // Recherche d'une solution par le tagName et son rang dans la fratrie
+    // Recherche d'une solution par le tagName
     selector = `${elem.tagName}`;
-    if (this.query(elem, selector, from)) {
-      return { key: selectorKey, value: selector };
-    }
-
-    // Même recherche en prenant en compte le rang dans la fratrie
-    selector = `${elem.tagName}:nth-child(${rank})`;
     if (this.query(elem, selector, from)) {
       return { key: selectorKey, value: selector };
     }
@@ -159,16 +153,6 @@ export default class ContentMapping {
     for (const cls of classList) {
       if (cls.length > 0) {
         selector = `${elem.tagName}.${cls}`;
-        if (this.query(elem, selector, from)) {
-          return { key: selectorKey, value: selector };
-        }
-      }
-    }
-
-    // Même recherche en prenant en compte le rang dans la fratrie
-    for (const cls of classList) {
-      if (cls.length > 0) {
-        selector = `${elem.tagName}.${cls}:nth-child(${rank})`;
         if (this.query(elem, selector, from)) {
           return { key: selectorKey, value: selector };
         }
@@ -184,15 +168,39 @@ export default class ContentMapping {
         }
         // Recherche d'une solution par association du tag d'un attribut et d'une classe
         for (const cls of classList) {
-          selector = `${elem.tagName}.${cls}[${key}="${value}"]`;
-          if (this.query(elem, selector, from)) {
-            return { key: selectorKey, value: selector };
+          if (cls.length > 0) {
+            selector = `${elem.tagName}.${cls}[${key}="${value}"]`;
+            if (this.query(elem, selector, from)) {
+              return { key: selectorKey, value: selector };
+            }
           }
         }
       }
     }
 
-    // Même recherche en prenant en compte le rang dans la fratrie
+    // Même recherches que les trois précédentes :
+    // - tag name
+    // - tag name et classe,
+    // - tag name et attribut d'une part et tag name attribut et classe d'autre part)
+    // mais prenant en compte le rang dans la fratrie
+
+    // Recherche d'une solution par le tagName et son rang dans la fratrie
+    selector = `${elem.tagName}:nth-child(${rank})`;
+    if (this.query(elem, selector, from)) {
+      return { key: selectorKey, value: selector };
+    }
+
+    // Recherche d'une solution par association du tag et d'une classe et son rang dans la fratrie
+    for (const cls of classList) {
+      if (cls.length > 0) {
+        selector = `${elem.tagName}.${cls}:nth-child(${rank})`;
+        if (this.query(elem, selector, from)) {
+          return { key: selectorKey, value: selector };
+        }
+      }
+    }
+
+    // Recherche d'une solution par association du tag et d'un attribut et son rang dans la fratrie
     for (const [key, value] of Object.entries(attributes)) {
       if (!this.excludeAttributes.includes(key)) {
         selector = `${elem.tagName}[${key}="${value}"]:nth-child(${rank})`;
@@ -200,11 +208,13 @@ export default class ContentMapping {
           return { key: selectorKey, value: selector };
         }
 
-        // Recherche d'une solution par association du tag d'un attribut et d'une classe
+        // Recherche d'une solution par association du tag d'un attribut et d'une classe et son rang dans la fratrie
         for (const cls of classList) {
-          selector = `${elem.tagName}.${cls}[${key}="${value}"]:nth-child(${rank})`;
-          if (this.query(elem, selector, from)) {
-            return { key: selectorKey, value: selector };
+          if (cls.length > 0) {
+            selector = `${elem.tagName}.${cls}[${key}="${value}"]:nth-child(${rank})`;
+            if (this.query(elem, selector, from)) {
+              return { key: selectorKey, value: selector };
+            }
           }
         }
       }
