@@ -15,8 +15,6 @@ const manifest: ManifestType = {
   background: { service_worker: 'src/background/index.js' },
   permissions:  [
     "activeTab",
-    "scripting",
-    "webRequest",
     "storage"
   ],
   action: {
